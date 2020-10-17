@@ -29,6 +29,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ProfileActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
     Button logoutBtn, start_pre_test_Btn;
     TextView userName,userEmail,userId;
@@ -37,13 +40,15 @@ public class ProfileActivity extends AppCompatActivity implements GoogleApiClien
     String mAccountUserId;
     private GoogleApiClient googleApiClient;
     private GoogleSignInOptions gso;
-    DatabaseReference rootRef;
-    String pretest;
+    DatabaseReference rootRef, emailRef;
+    Map<String, Object> updates = new HashMap<String,Object>();
+    Boolean pretest;
+    Intent intent;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-
+        intent = getIntent();
         logoutBtn = findViewById(R.id.logoutBtn);
         start_pre_test_Btn = findViewById(R.id.start_pre_test_Btn);
         userName = findViewById(R.id.name);
@@ -51,6 +56,12 @@ public class ProfileActivity extends AppCompatActivity implements GoogleApiClien
         userId = findViewById(R.id.userId);
         profileImage = findViewById(R.id.profileImage);
         rootRef = FirebaseDatabase.getInstance().getReference();
+        pretest = intent.getBooleanExtra("pretest", false);
+
+        // Database reference pointing to root of database
+        rootRef = FirebaseDatabase.getInstance().getReference();
+        // Database reference pointing to demo node
+        emailRef = rootRef.child("data");
 
         gso =  new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -84,23 +95,30 @@ public class ProfileActivity extends AppCompatActivity implements GoogleApiClien
             @Override
             public void onClick(View v) {
                 //gotoPreTestActivity();
+                ResearchData data = new ResearchData(mAccountUserId, email);
+                rootRef.child(mAccountUserId).setValue(data);
                 rootRef.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.exists()) {
+                        //if (snapshot.exists()) {
                             ResearchData data = snapshot.child(mAccountUserId).getValue(ResearchData.class);
                             if (data!=null) {
-                                if (data.getPretest().equals("0")) {
-                                    Toast.makeText(ProfileActivity.this, "marks greater than 10", Toast.LENGTH_SHORT).show();
-                                    gotoPreTestActivity();
-                                } else if (data.getPretest().equals("1")) {
-                                    Toast.makeText(ProfileActivity.this, "10", Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(ProfileActivity.this, data.getPretest().toString(), Toast.LENGTH_SHORT).show();
+                                if (data.getPretest() || data.getPretest()==null) {
+                                    //Toast.makeText(ProfileActivity.this, "marks greater than 10", Toast.LENGTH_SHORT).show();
                                     gotoContent1Activity();
+                                } else {
+                                    //Toast.makeText(ProfileActivity.this, "10", Toast.LENGTH_SHORT).show();
+                                    gotoPreTestActivity();
+                                    data = new ResearchData( true);
+                                    rootRef.child(mAccountUserId).setValue(data);
                                 }
                             } else {
                                 gotoPreTestActivity();
+                                data = new ResearchData( true);
+                                rootRef.child(mAccountUserId).setValue(data);
                             }
-                        }
+                        //}
                     }
 
                     @Override

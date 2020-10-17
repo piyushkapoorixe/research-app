@@ -8,39 +8,35 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-public class Content1Activity extends AppCompatActivity {
-    Button content1_Btn;
+public class Content2Activity extends AppCompatActivity {
+    Button content2_Btn;
     String email;
     String mAccountUserId;
     Intent intent;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_content1);
+        setContentView(R.layout.activity_content2);
         intent = getIntent();
-
-        content1_Btn = findViewById(R.id.content1_Btn);
-
         mAccountUserId = intent.getStringExtra("mAccountUserId");
         email = intent.getStringExtra("email");
 
-        content1_Btn.setOnClickListener(new View.OnClickListener() {
+        content2_Btn = findViewById(R.id.content2_Btn);
+
+        content2_Btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                gotoContent2Activity();
+                gotoContent3Activity();
             }
         });
     }
 
-    private void gotoContent2Activity() {
-        Intent intent=new Intent(this,Content2Activity.class);
+    private void gotoContent3Activity() {
+        Intent intent=new Intent(this,Content3Activity.class);
         intent.putExtra("email", email);
         intent.putExtra("mAccountUserId", mAccountUserId);
         startActivity(intent);
     }
 
-    @Override
-    public void onBackPressed() {
-        Toast.makeText(getApplicationContext(), "Disabled Back Press", Toast.LENGTH_SHORT).show();
-    }
+
 }

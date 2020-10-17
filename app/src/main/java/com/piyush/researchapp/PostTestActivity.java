@@ -1,60 +1,51 @@
 package com.piyush.researchapp;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-
-public class PreTestActivity extends AppCompatActivity {
-    Button submit_pre_test_Btn, button1, button2, button3, button4;
-    TextView questionsPreTest;
+public class PostTestActivity extends AppCompatActivity {
+    Button submit_post_test_Btn, button1post, button2post, button3post, button4post;
+    TextView questionsPostTest;
     int total=1;
     int correct=0;
     int wrong=0;
     DatabaseReference rootRef, emailRef, reference;
     Map<String, Object> updates = new HashMap<String,Object>();
     String mAccountUserId;
-    Boolean pretest;
     String email;
     Intent intent;
-    //Map<String, Object> updates2 = new HashMap<String,Object>();
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pre_test);
+        setContentView(R.layout.activity_post_test);
+
         intent = getIntent();
         mAccountUserId = intent.getStringExtra("mAccountUserId");
-        //pretest = intent.getBooleanExtra("pretest", false);
         email = intent.getStringExtra("email");
-        submit_pre_test_Btn = findViewById(R.id.submit_pre_test_Btn);
-        button1 = findViewById(R.id.button1);
-        button2 = findViewById(R.id.button2);
-        button3 = findViewById(R.id.button3);
-        button4 = findViewById(R.id.button4);
-        questionsPreTest = (TextView)findViewById(R.id.questionsPreTest);
+
+        submit_post_test_Btn = findViewById(R.id.submit_post_test_Btn);
+        button1post = findViewById(R.id.button1post);
+        button2post = findViewById(R.id.button2post);
+        button3post = findViewById(R.id.button3post);
+        button4post = findViewById(R.id.button4post);
+        questionsPostTest = (TextView)findViewById(R.id.questionsPostTest);
 
         updateQuestion();
 
@@ -63,45 +54,44 @@ public class PreTestActivity extends AppCompatActivity {
         // Database reference pointing to demo node
         emailRef = rootRef.child("data");
 
-        submit_pre_test_Btn.setOnClickListener((new View.OnClickListener() {
+        submit_post_test_Btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String email = intent.getStringExtra("email");
-                //Toast.makeText(getApplicationContext(),email,Toast.LENGTH_LONG).show();
-                // Push creates a unique id in database
-                /*updates.put("email", email);
-                updates.put("marks", "10");
-//                emailRef.push().setValue(updates);
-                rootRef.child("data").child(userId).setValue(updates);*/
-                ResearchData data = new ResearchData(correct);
+                ResearchData data = new ResearchData(mAccountUserId,correct);
                 rootRef.child(mAccountUserId).setValue(data);
                 gotoContent1Activity();
             }
-        }));
-
-
+        });
     }
 
     private void updateQuestion() {
         if (total > 4) {
             Toast.makeText(getApplicationContext(),"Test Over! Please Submit now",Toast.LENGTH_LONG).show();
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(getApplicationContext(),"Test Over! Please Submit now",Toast.LENGTH_LONG).show();
+                }
+            }, 2000);
+            Toast.makeText(getApplicationContext(),"Test Over! Please Submit now",Toast.LENGTH_LONG).show();
         } else {
-            reference = rootRef.child("Pretest").child(String.valueOf(total));
+            reference = rootRef.child("Posttest").child(String.valueOf(total));
             reference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    final PretestQuestion pretestQuestion = snapshot.getValue(PretestQuestion.class);
+                    final PretestQuestion posttestQuestion = snapshot.getValue(PretestQuestion.class);
 
-                    questionsPreTest.setText(pretestQuestion.getQuestion());
-                    button1.setText(pretestQuestion.getOption1());
-                    button2.setText(pretestQuestion.getOption2());
-                    button3.setText(pretestQuestion.getOption3());
-                    button4.setText(pretestQuestion.getOption4());
+                    questionsPostTest.setText(posttestQuestion.getQuestion());
+                    button1post.setText(posttestQuestion.getOption1());
+                    button2post.setText(posttestQuestion.getOption2());
+                    button3post.setText(posttestQuestion.getOption3());
+                    button4post.setText(posttestQuestion.getOption4());
 
-                    button1.setOnClickListener(new View.OnClickListener() {
+                    button1post.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            if (button1.getText().toString().equals(pretestQuestion.getAnswer())) {
+                            if (button1post.getText().toString().equals(posttestQuestion.getAnswer())) {
                                 correct++;
                                 updateQuestion();
                             } else {
@@ -111,10 +101,10 @@ public class PreTestActivity extends AppCompatActivity {
                         }
                     });
 
-                    button2.setOnClickListener(new View.OnClickListener() {
+                    button2post.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            if (button2.getText().toString().equals(pretestQuestion.getAnswer())) {
+                            if (button2post.getText().toString().equals(posttestQuestion.getAnswer())) {
                                 correct++;
                                 updateQuestion();
                             } else {
@@ -124,10 +114,10 @@ public class PreTestActivity extends AppCompatActivity {
                         }
                     });
 
-                    button3.setOnClickListener(new View.OnClickListener() {
+                    button3post.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            if (button3.getText().toString().equals(pretestQuestion.getAnswer())) {
+                            if (button3post.getText().toString().equals(posttestQuestion.getAnswer())) {
                                 correct++;
                                 updateQuestion();
                             } else {
@@ -137,10 +127,10 @@ public class PreTestActivity extends AppCompatActivity {
                         }
                     });
 
-                    button4.setOnClickListener(new View.OnClickListener() {
+                    button4post.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            if (button4.getText().toString().equals(pretestQuestion.getAnswer())) {
+                            if (button4post.getText().toString().equals(posttestQuestion.getAnswer())) {
                                 correct++;
                                 updateQuestion();
                             } else {
@@ -158,7 +148,6 @@ public class PreTestActivity extends AppCompatActivity {
             });
         }
     }
-
 
     private void gotoContent1Activity(){
         Intent intent=new Intent(this,Content1Activity.class);
