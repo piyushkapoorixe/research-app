@@ -155,5 +155,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             firebaseAuth.removeAuthStateListener(authStateListener);
         }
     }
+    @Override
+    public void onBackPressed() {
+        Toast.makeText(getApplicationContext(), "Disabled Back Press", Toast.LENGTH_SHORT).show();
+    }
 
 }

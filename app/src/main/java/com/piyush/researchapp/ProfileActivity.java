@@ -24,9 +24,10 @@ import com.google.android.gms.common.api.Status;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class ProfileActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
-    Button logoutBtn;
+    Button logoutBtn, start_pre_test_Btn;
     TextView userName,userEmail,userId;
     ImageView profileImage;
+    String email;
     private GoogleApiClient googleApiClient;
     private GoogleSignInOptions gso;
     @Override
@@ -35,6 +36,7 @@ public class ProfileActivity extends AppCompatActivity implements GoogleApiClien
         setContentView(R.layout.activity_profile);
 
         logoutBtn = findViewById(R.id.logoutBtn);
+        start_pre_test_Btn = findViewById(R.id.start_pre_test_Btn);
         userName = findViewById(R.id.name);
         userEmail = findViewById(R.id.email);
         userId = findViewById(R.id.userId);
@@ -67,6 +69,13 @@ public class ProfileActivity extends AppCompatActivity implements GoogleApiClien
                         });
             }
         });
+
+        start_pre_test_Btn.setOnClickListener((new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gotoPreTestActivity();
+            }
+        }));
     }
 
     @Override
@@ -91,6 +100,7 @@ public class ProfileActivity extends AppCompatActivity implements GoogleApiClien
             userName.setText(account.getDisplayName());
             userEmail.setText(account.getEmail());
             userId.setText(account.getId());
+            email = account.getEmail();
             try{
                 Glide.with(this).load(account.getPhotoUrl()).into(profileImage);
             }catch (NullPointerException e){
@@ -101,12 +111,22 @@ public class ProfileActivity extends AppCompatActivity implements GoogleApiClien
             gotoMainActivity();
         }
     }
+
     private void gotoMainActivity(){
         Intent intent=new Intent(this,MainActivity.class);
+        startActivity(intent);
+    }
+    private void gotoPreTestActivity(){
+        Intent intent=new Intent(this,PreTestActivity.class);
+        intent.putExtra("email", email);
         startActivity(intent);
     }
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
+    }
+    @Override
+    public void onBackPressed() {
+        Toast.makeText(getApplicationContext(), "Disabled Back Press", Toast.LENGTH_SHORT).show();
     }
 }
