@@ -2,6 +2,7 @@ package com.piyush.researchapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -22,6 +23,11 @@ import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class ProfileActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
     Button logoutBtn, start_pre_test_Btn;
@@ -31,6 +37,8 @@ public class ProfileActivity extends AppCompatActivity implements GoogleApiClien
     String mAccountUserId;
     private GoogleApiClient googleApiClient;
     private GoogleSignInOptions gso;
+    DatabaseReference rootRef;
+    String pretest;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +50,7 @@ public class ProfileActivity extends AppCompatActivity implements GoogleApiClien
         userEmail = findViewById(R.id.email);
         userId = findViewById(R.id.userId);
         profileImage = findViewById(R.id.profileImage);
+        rootRef = FirebaseDatabase.getInstance().getReference();
 
         gso =  new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -74,7 +83,31 @@ public class ProfileActivity extends AppCompatActivity implements GoogleApiClien
         start_pre_test_Btn.setOnClickListener((new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                gotoPreTestActivity();
+                //gotoPreTestActivity();
+                rootRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            ResearchData data = snapshot.child(mAccountUserId).getValue(ResearchData.class);
+                            if (data!=null) {
+                                if (data.getPretest().equals("0")) {
+                                    Toast.makeText(ProfileActivity.this, "marks greater than 10", Toast.LENGTH_SHORT).show();
+                                    gotoPreTestActivity();
+                                } else if (data.getPretest().equals("1")) {
+                                    Toast.makeText(ProfileActivity.this, "10", Toast.LENGTH_SHORT).show();
+                                    gotoContent1Activity();
+                                }
+                            } else {
+                                gotoPreTestActivity();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.w("TAG", "Failed to read value.", error.toException());
+                    }
+                });
             }
         }));
     }
@@ -121,7 +154,14 @@ public class ProfileActivity extends AppCompatActivity implements GoogleApiClien
     private void gotoPreTestActivity(){
         Intent intent=new Intent(this,PreTestActivity.class);
         intent.putExtra("email", email);
-        intent.putExtra("userId", mAccountUserId);
+        intent.putExtra("mAccountUserId", mAccountUserId);
+        intent.putExtra("pretest",pretest);
+        startActivity(intent);
+    }
+    private void gotoContent1Activity(){
+        Intent intent=new Intent(this,Content1Activity.class);
+        intent.putExtra("email", email);
+        intent.putExtra("mAccountUserId", mAccountUserId);
         startActivity(intent);
     }
     @Override

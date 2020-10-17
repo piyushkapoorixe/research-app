@@ -7,11 +7,13 @@ public class ResearchData implements Serializable {
     private String userId;
     private String email;
     private int marks;
+    private String pretest;
 
-    public ResearchData(String userId, String email, int marks) {
+    public ResearchData(String userId, String email, int marks, String pretest) {
         this.userId = userId;
         this.email = email;
         this.marks = marks;
+        this.pretest = pretest;
     }
 
     public ResearchData(){
@@ -40,5 +42,13 @@ public class ResearchData implements Serializable {
 
     public void setMarks(int marks) {
         this.marks = marks;
+    }
+
+    public String getPretest() {
+        return pretest;
+    }
+
+    public void setPretest(int marks) {
+        this.pretest = pretest;
     }
 }

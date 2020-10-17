@@ -29,7 +29,9 @@ public class PreTestActivity extends AppCompatActivity {
     Button submit_pre_test_Btn;
     DatabaseReference rootRef, emailRef;
     Map<String, Object> updates = new HashMap<String,Object>();
-    String userId;
+    String mAccountUserId;
+    String pretest;
+    String email;
     Intent intent;
     //Map<String, Object> updates2 = new HashMap<String,Object>();
 
@@ -39,7 +41,9 @@ public class PreTestActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pre_test);
         intent = getIntent();
-        userId = intent.getStringExtra("userId");
+        mAccountUserId = intent.getStringExtra("mAccountUserId");
+        pretest = intent.getStringExtra("pretest");
+        email = intent.getStringExtra("email");
         submit_pre_test_Btn = findViewById(R.id.submit_pre_test_Btn);
 
         // Database reference pointing to root of database
@@ -57,22 +61,24 @@ public class PreTestActivity extends AppCompatActivity {
                 updates.put("marks", "10");
 //                emailRef.push().setValue(updates);
                 rootRef.child("data").child(userId).setValue(updates);*/
-                ResearchData data = new ResearchData(userId,email,50);
-                rootRef.child(userId).setValue(data);
+                ResearchData data = new ResearchData(mAccountUserId,email,50,"1");
+                rootRef.child(mAccountUserId).setValue(data);
                 gotoContent1Activity();
             }
         }));
 
-        rootRef.addValueEventListener(new ValueEventListener() {
+        /*rootRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    ResearchData data = snapshot.child(userId).getValue(ResearchData.class);
-                    if (data.getMarks() > 10){
-                        Toast.makeText(PreTestActivity.this,"marks greater than 10", Toast.LENGTH_SHORT).show();
-                    }
-                    else{
-                        Toast.makeText(PreTestActivity.this,"10", Toast.LENGTH_SHORT).show();
+                    ResearchData data = snapshot.child(mAccountUserId).getValue(ResearchData.class);
+                    pretest = data.getPretest();
+                    if (data!=null) {
+                        if (data.getMarks() > 10) {
+                            Toast.makeText(PreTestActivity.this, "marks greater than 10", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(PreTestActivity.this, "10", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }
             }
@@ -81,13 +87,15 @@ public class PreTestActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.w("TAG", "Failed to read value.", error.toException());
             }
-        });
+        });*/
     }
 
 
 
     private void gotoContent1Activity(){
         Intent intent=new Intent(this,Content1Activity.class);
+        intent.putExtra("email", email);
+        intent.putExtra("mAccountUserId",mAccountUserId);
         startActivity(intent);
     }
 
