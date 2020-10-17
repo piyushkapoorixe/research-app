@@ -22,6 +22,8 @@ public class Content3Activity extends AppCompatActivity {
     String mAccountUserId;
     Intent intent;
     DatabaseReference rootRef;
+    private ResearchData userData;
+    private Boolean isPostTestAlreadyGiven = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,45 +32,58 @@ public class Content3Activity extends AppCompatActivity {
         mAccountUserId = intent.getStringExtra("mAccountUserId");
         email = intent.getStringExtra("email");
 
-        content3_Btn = findViewById(R.id.content2_Btn);
+        content3_Btn = findViewById(R.id.content3_Btn);
 
         rootRef = FirebaseDatabase.getInstance().getReference();
+
+        rootRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+               /* ResearchData data = snapshot.child(mAccountUserId).getValue(ResearchData.class);
+                if (data!=null) {
+                    if (!data.getPosttest()) {
+                        gotoPostTestActivity();
+                    } else if (data.getPosttest()) {
+                        gotoProfileActivity();
+                    }
+                } else {
+                    gotoProfileActivity();
+                }
+                //}*/
+               userData = snapshot.child(mAccountUserId).getValue(ResearchData.class);
+               if (userData!=null && userData.getPosttest()!=null){
+                   isPostTestAlreadyGiven = userData.getPosttest();
+               }
+               else{
+                   isPostTestAlreadyGiven = false;
+               }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.w("TAG", "Failed to read value.", error.toException());
+            }
+        });
+
 
         content3_Btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                rootRef.child(mAccountUserId).child("posttest").setValue(isPostTestAlreadyGiven);
+                if (isPostTestAlreadyGiven){
+                    gotoProfileActivity();
+                }
+                else{
+                    gotoPostTestActivity();
+                    rootRef.child(mAccountUserId).child("posttest").setValue(true);
+                }
                 //gotoPostTestActivity();
-
-                rootRef.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        //if (snapshot.exists()) {
-                        ResearchData data = snapshot.child(mAccountUserId).getValue(ResearchData.class);
-                        if (data!=null) {
-                            if (!data.getPosttest()) {
-                                //Toast.makeText(ProfileActivity.this, "marks greater than 10", Toast.LENGTH_SHORT).show();
-                                gotoPostTestActivity();
-                            } else if (data.getPosttest()) {
-                                //Toast.makeText(ProfileActivity.this, "10", Toast.LENGTH_SHORT).show();
-                                gotoProfileActivity();
-                            }
-                        } else {
-                            gotoProfileActivity();
-                        }
-                        //}
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Log.w("TAG", "Failed to read value.", error.toException());
-                    }
-                });
-
-                ResearchData data = new ResearchData( true, mAccountUserId);
-                rootRef.child(mAccountUserId).setValue(data);
+               /* ResearchData data = new ResearchData( true, mAccountUserId);
+                rootRef.child(mAccountUserId).setValue(data);*/
             }
         });
+
+
     }
 
     private void gotoPostTestActivity() {

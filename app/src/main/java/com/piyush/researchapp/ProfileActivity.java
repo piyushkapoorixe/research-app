@@ -100,16 +100,18 @@ public class ProfileActivity extends AppCompatActivity implements GoogleApiClien
                 //gotoPreTestActivity();
                 /*ResearchData data = new ResearchData(mAccountUserId, email,false);
                 rootRef.child(mAccountUserId).setValue(data);*/
-                if (isEmptyData) {
-                    ResearchData data = new ResearchData(mAccountUserId, email, false);
-                    rootRef.child(mAccountUserId).setValue(data);
-                    gotoPreTestActivity();
-                } else {
-                    if (userData.getPretest()) {
-                        gotoContent1Activity();
-                    } else {
-                        rootRef.child(mAccountUserId).child("pretest").setValue(true);
+                if (userData!=null) {
+                    if (isEmptyData) {
+                        ResearchData data = new ResearchData(mAccountUserId, email, true);
+                        rootRef.child(mAccountUserId).setValue(data);
                         gotoPreTestActivity();
+                    } else {
+                        if (userData.getPretest()) {
+                            gotoContent1Activity();
+                        } else {
+                            rootRef.child(mAccountUserId).child("pretest").setValue(true);
+                            gotoPreTestActivity();
+                        }
                     }
                 }
             }
