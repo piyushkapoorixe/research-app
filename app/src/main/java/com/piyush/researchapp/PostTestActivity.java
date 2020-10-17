@@ -8,27 +8,28 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-public class Content1Activity extends AppCompatActivity {
-    Button content1_Btn;
+public class PostTestActivity extends AppCompatActivity {
+    Button submit_post_test_Btn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_content1);
+        setContentView(R.layout.activity_post_test);
 
-        content1_Btn = findViewById(R.id.content1_Btn);
+        submit_post_test_Btn = findViewById(R.id.submit_post_test_Btn);
 
-        content1_Btn.setOnClickListener(new View.OnClickListener() {
+        submit_post_test_Btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                gotoContent2Activity();
+                gotoContent1Activity();
             }
         });
     }
 
-    private void gotoContent2Activity() {
-        Intent intent=new Intent(this,Content2Activity.class);
+    private void gotoContent1Activity(){
+        Intent intent=new Intent(this,Content1Activity.class);
         startActivity(intent);
     }
+
 
     @Override
     public void onBackPressed() {

@@ -8,25 +8,25 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-public class Content1Activity extends AppCompatActivity {
-    Button content1_Btn;
+public class Content3Activity extends AppCompatActivity {
+    Button content3_Btn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_content1);
+        setContentView(R.layout.activity_content3);
 
-        content1_Btn = findViewById(R.id.content1_Btn);
+        content3_Btn = findViewById(R.id.content2_Btn);
 
-        content1_Btn.setOnClickListener(new View.OnClickListener() {
+        content3_Btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                gotoContent2Activity();
+                gotoPostTestActivity();
             }
         });
     }
 
-    private void gotoContent2Activity() {
-        Intent intent=new Intent(this,Content2Activity.class);
+    private void gotoPostTestActivity() {
+        Intent intent=new Intent(this,PostTestActivity.class);
         startActivity(intent);
     }
 

@@ -47,12 +47,13 @@ public class PreTestActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = getIntent();
                 String email = intent.getStringExtra("email");
+                String myUserId = intent.getStringExtra("myUserId");
                 //Toast.makeText(getApplicationContext(),email,Toast.LENGTH_LONG).show();
                 // Push creates a unique id in database
                 updates.put("email", email);
                 updates.put("marks", "5");
-                emailRef.push().setValue(updates);
-
+                //emailRef.push().setValue(updates);
+                rootRef.child("data").child(myUserId).setValue(updates);
                 gotoContent1Activity();
             }
         }));

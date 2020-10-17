@@ -28,6 +28,7 @@ public class ProfileActivity extends AppCompatActivity implements GoogleApiClien
     TextView userName,userEmail,userId;
     ImageView profileImage;
     String email;
+    String myUserId;
     private GoogleApiClient googleApiClient;
     private GoogleSignInOptions gso;
     @Override
@@ -101,6 +102,7 @@ public class ProfileActivity extends AppCompatActivity implements GoogleApiClien
             userEmail.setText(account.getEmail());
             userId.setText(account.getId());
             email = account.getEmail();
+            myUserId = account.getId();
             try{
                 Glide.with(this).load(account.getPhotoUrl()).into(profileImage);
             }catch (NullPointerException e){
@@ -119,6 +121,7 @@ public class ProfileActivity extends AppCompatActivity implements GoogleApiClien
     private void gotoPreTestActivity(){
         Intent intent=new Intent(this,PreTestActivity.class);
         intent.putExtra("email", email);
+        intent.putExtra("myUserId", myUserId);
         startActivity(intent);
     }
     @Override
