@@ -73,8 +73,8 @@ public class PreTestActivity extends AppCompatActivity {
                 updates.put("marks", "10");
 //                emailRef.push().setValue(updates);
                 rootRef.child("data").child(userId).setValue(updates);*/
-                ResearchData data = new ResearchData(correct);
-                rootRef.child(mAccountUserId).setValue(data);
+//                ResearchData data = new ResearchData(correct);
+                rootRef.child(mAccountUserId).child("marks").setValue(correct);
                 gotoContent1Activity();
             }
         }));
@@ -103,9 +103,11 @@ public class PreTestActivity extends AppCompatActivity {
                         public void onClick(View v) {
                             if (button1.getText().toString().equals(pretestQuestion.getAnswer())) {
                                 correct++;
+                                total++;
                                 updateQuestion();
                             } else {
                                 wrong++;
+                                total++;
                                 updateQuestion();
                             }
                         }
@@ -116,9 +118,11 @@ public class PreTestActivity extends AppCompatActivity {
                         public void onClick(View v) {
                             if (button2.getText().toString().equals(pretestQuestion.getAnswer())) {
                                 correct++;
+                                total++;
                                 updateQuestion();
                             } else {
                                 wrong++;
+                                total++;
                                 updateQuestion();
                             }
                         }
@@ -129,9 +133,11 @@ public class PreTestActivity extends AppCompatActivity {
                         public void onClick(View v) {
                             if (button3.getText().toString().equals(pretestQuestion.getAnswer())) {
                                 correct++;
+                                total++;
                                 updateQuestion();
                             } else {
                                 wrong++;
+                                total++;
                                 updateQuestion();
                             }
                         }
@@ -142,9 +148,11 @@ public class PreTestActivity extends AppCompatActivity {
                         public void onClick(View v) {
                             if (button4.getText().toString().equals(pretestQuestion.getAnswer())) {
                                 correct++;
+                                total++;
                                 updateQuestion();
                             } else {
                                 wrong++;
+                                total++;
                                 updateQuestion();
                             }
                         }

@@ -47,18 +47,16 @@ public class PostTestActivity extends AppCompatActivity {
         button4post = findViewById(R.id.button4post);
         questionsPostTest = (TextView)findViewById(R.id.questionsPostTest);
 
-        updateQuestion();
-
         // Database reference pointing to root of database
         rootRef = FirebaseDatabase.getInstance().getReference();
         // Database reference pointing to demo node
         emailRef = rootRef.child("data");
+        updateQuestion();
 
         submit_post_test_Btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ResearchData data = new ResearchData(mAccountUserId,correct);
-                rootRef.child(mAccountUserId).setValue(data);
+                rootRef.child(mAccountUserId).child("posttestmarks").setValue(correct);
                 gotoContent1Activity();
             }
         });
@@ -93,9 +91,11 @@ public class PostTestActivity extends AppCompatActivity {
                         public void onClick(View v) {
                             if (button1post.getText().toString().equals(posttestQuestion.getAnswer())) {
                                 correct++;
+                                total++;
                                 updateQuestion();
                             } else {
                                 wrong++;
+                                total++;
                                 updateQuestion();
                             }
                         }
@@ -106,9 +106,11 @@ public class PostTestActivity extends AppCompatActivity {
                         public void onClick(View v) {
                             if (button2post.getText().toString().equals(posttestQuestion.getAnswer())) {
                                 correct++;
+                                total++;
                                 updateQuestion();
                             } else {
                                 wrong++;
+                                total++;
                                 updateQuestion();
                             }
                         }
@@ -119,9 +121,11 @@ public class PostTestActivity extends AppCompatActivity {
                         public void onClick(View v) {
                             if (button3post.getText().toString().equals(posttestQuestion.getAnswer())) {
                                 correct++;
+                                total++;
                                 updateQuestion();
                             } else {
                                 wrong++;
+                                total++;
                                 updateQuestion();
                             }
                         }
@@ -132,9 +136,11 @@ public class PostTestActivity extends AppCompatActivity {
                         public void onClick(View v) {
                             if (button4post.getText().toString().equals(posttestQuestion.getAnswer())) {
                                 correct++;
+                                total++;
                                 updateQuestion();
                             } else {
                                 wrong++;
+                                total++;
                                 updateQuestion();
                             }
                         }
