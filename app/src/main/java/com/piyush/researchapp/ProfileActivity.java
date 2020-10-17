@@ -28,6 +28,7 @@ public class ProfileActivity extends AppCompatActivity implements GoogleApiClien
     TextView userName,userEmail,userId;
     ImageView profileImage;
     String email;
+    String mAccountUserId;
     private GoogleApiClient googleApiClient;
     private GoogleSignInOptions gso;
     @Override
@@ -97,6 +98,7 @@ public class ProfileActivity extends AppCompatActivity implements GoogleApiClien
     private void handleSignInResult(GoogleSignInResult result){
         if(result.isSuccess()){
             GoogleSignInAccount account=result.getSignInAccount();
+            mAccountUserId = account.getId();
             userName.setText(account.getDisplayName());
             userEmail.setText(account.getEmail());
             userId.setText(account.getId());
@@ -119,6 +121,7 @@ public class ProfileActivity extends AppCompatActivity implements GoogleApiClien
     private void gotoPreTestActivity(){
         Intent intent=new Intent(this,PreTestActivity.class);
         intent.putExtra("email", email);
+        intent.putExtra("userId", mAccountUserId);
         startActivity(intent);
     }
     @Override
