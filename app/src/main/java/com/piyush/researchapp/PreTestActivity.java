@@ -56,12 +56,12 @@ public class PreTestActivity extends AppCompatActivity {
         button4 = findViewById(R.id.button4);
         questionsPreTest = (TextView)findViewById(R.id.questionsPreTest);
 
-        updateQuestion();
-
         // Database reference pointing to root of database
         rootRef = FirebaseDatabase.getInstance().getReference();
         // Database reference pointing to demo node
         emailRef = rootRef.child("data");
+
+        updateQuestion();
 
         submit_pre_test_Btn.setOnClickListener((new View.OnClickListener() {
             @Override

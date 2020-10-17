@@ -34,16 +34,19 @@ import java.util.Map;
 
 public class ProfileActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
     Button logoutBtn, start_pre_test_Btn;
-    TextView userName,userEmail,userId;
+    TextView userName, userEmail, userId;
     ImageView profileImage;
     String email;
     String mAccountUserId;
     private GoogleApiClient googleApiClient;
     private GoogleSignInOptions gso;
     DatabaseReference rootRef, emailRef;
-    Map<String, Object> updates = new HashMap<String,Object>();
+    Map<String, Object> updates = new HashMap<String, Object>();
     Boolean pretest;
     Intent intent;
+    Boolean isEmptyData = false;
+    private ResearchData userData;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,13 +66,13 @@ public class ProfileActivity extends AppCompatActivity implements GoogleApiClien
         // Database reference pointing to demo node
         emailRef = rootRef.child("data");
 
-        gso =  new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
 
-        googleApiClient=new GoogleApiClient.Builder(this)
-                .enableAutoManage(this,this)
-                .addApi(Auth.GOOGLE_SIGN_IN_API,gso)
+        googleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this, this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
 
@@ -81,10 +84,10 @@ public class ProfileActivity extends AppCompatActivity implements GoogleApiClien
                         new ResultCallback<Status>() {
                             @Override
                             public void onResult(Status status) {
-                                if (status.isSuccess()){
+                                if (status.isSuccess()) {
                                     gotoMainActivity();
-                                }else{
-                                    Toast.makeText(getApplicationContext(),"Session not close",Toast.LENGTH_LONG).show();
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "Session not close", Toast.LENGTH_LONG).show();
                                 }
                             }
                         });
@@ -95,49 +98,63 @@ public class ProfileActivity extends AppCompatActivity implements GoogleApiClien
             @Override
             public void onClick(View v) {
                 //gotoPreTestActivity();
-                ResearchData data = new ResearchData(mAccountUserId, email);
-                rootRef.child(mAccountUserId).setValue(data);
-                rootRef.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        //if (snapshot.exists()) {
-                            ResearchData data = snapshot.child(mAccountUserId).getValue(ResearchData.class);
-                            if (data!=null) {
-                                //Toast.makeText(ProfileActivity.this, data.getPretest().toString(), Toast.LENGTH_SHORT).show();
-                                if (data.getPretest() || data.getPretest()==null) {
-                                    //Toast.makeText(ProfileActivity.this, "marks greater than 10", Toast.LENGTH_SHORT).show();
-                                    gotoContent1Activity();
-                                } else {
-                                    //Toast.makeText(ProfileActivity.this, "10", Toast.LENGTH_SHORT).show();
-                                    gotoPreTestActivity();
-                                    data = new ResearchData( true);
-                                    rootRef.child(mAccountUserId).setValue(data);
-                                }
-                            } else {
-                                gotoPreTestActivity();
-                                data = new ResearchData( true);
-                                rootRef.child(mAccountUserId).setValue(data);
-                            }
-                        //}
+                /*ResearchData data = new ResearchData(mAccountUserId, email,false);
+                rootRef.child(mAccountUserId).setValue(data);*/
+                if (isEmptyData) {
+                    ResearchData data = new ResearchData(mAccountUserId, email, false);
+                    rootRef.child(mAccountUserId).setValue(data);
+                    gotoPreTestActivity();
+                } else {
+                    if (userData.getPretest()) {
+                        gotoContent1Activity();
+                    } else {
+                        rootRef.child(mAccountUserId).child("pretest").setValue(true);
+                        gotoPreTestActivity();
                     }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Log.w("TAG", "Failed to read value.", error.toException());
-                    }
-                });
+                }
             }
         }));
+
+        rootRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                ResearchData data = snapshot.child(mAccountUserId).getValue(ResearchData.class);
+                userData = snapshot.child(mAccountUserId).getValue(ResearchData.class);
+                if (data != null) {
+                    isEmptyData = false;
+                    /*if (data.getPretest()!=null && data.getPretest() ) {
+                        gotoContent1Activity();
+                    } else {
+                        rootRef.child(mAccountUserId).child("pretest").setValue(true);
+                        gotoPreTestActivity();
+                    }*/
+                } else {
+//                                data = new ResearchData( true);
+                    /*rootRef.child(mAccountUserId).setValue(data);
+                    gotoPreTestActivity();*/
+                    isEmptyData = true;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.w("TAG", "Failed to read value.", error.toException());
+            }
+        });
+    }
+
+    private void goToSpecificActivity() {
+
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        OptionalPendingResult<GoogleSignInResult> opr= Auth.GoogleSignInApi.silentSignIn(googleApiClient);
-        if(opr.isDone()){
-            GoogleSignInResult result=opr.get();
+        OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(googleApiClient);
+        if (opr.isDone()) {
+            GoogleSignInResult result = opr.get();
             handleSignInResult(result);
-        }else{
+        } else {
             opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
                 @Override
                 public void onResult(@NonNull GoogleSignInResult googleSignInResult) {
@@ -146,46 +163,51 @@ public class ProfileActivity extends AppCompatActivity implements GoogleApiClien
             });
         }
     }
-    private void handleSignInResult(GoogleSignInResult result){
-        if(result.isSuccess()){
-            GoogleSignInAccount account=result.getSignInAccount();
+
+    private void handleSignInResult(GoogleSignInResult result) {
+        if (result.isSuccess()) {
+            GoogleSignInAccount account = result.getSignInAccount();
             mAccountUserId = account.getId();
             userName.setText(account.getDisplayName());
             userEmail.setText(account.getEmail());
             userId.setText(account.getId());
             email = account.getEmail();
-            try{
+            try {
                 Glide.with(this).load(account.getPhotoUrl()).into(profileImage);
-            }catch (NullPointerException e){
-                Toast.makeText(getApplicationContext(),"image not found",Toast.LENGTH_LONG).show();
+            } catch (NullPointerException e) {
+                Toast.makeText(getApplicationContext(), "image not found", Toast.LENGTH_LONG).show();
             }
 
-        }else{
+        } else {
             gotoMainActivity();
         }
     }
 
-    private void gotoMainActivity(){
-        Intent intent=new Intent(this,MainActivity.class);
+    private void gotoMainActivity() {
+        Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
-    private void gotoPreTestActivity(){
-        Intent intent=new Intent(this,PreTestActivity.class);
+
+    private void gotoPreTestActivity() {
+        Intent intent = new Intent(this, PreTestActivity.class);
         intent.putExtra("email", email);
         intent.putExtra("mAccountUserId", mAccountUserId);
-        intent.putExtra("pretest",pretest);
+        intent.putExtra("pretest", pretest);
         startActivity(intent);
     }
-    private void gotoContent1Activity(){
-        Intent intent=new Intent(this,Content1Activity.class);
+
+    private void gotoContent1Activity() {
+        Intent intent = new Intent(this, Content1Activity.class);
         intent.putExtra("email", email);
         intent.putExtra("mAccountUserId", mAccountUserId);
         startActivity(intent);
     }
+
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
     }
+
     @Override
     public void onBackPressed() {
         Toast.makeText(getApplicationContext(), "Disabled Back Press", Toast.LENGTH_SHORT).show();
