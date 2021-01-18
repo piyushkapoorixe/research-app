@@ -11,7 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".PostTestActivity"></activity>
+        <activity android:name=".FillInfo"></activity>
+        <activity android:name=".PostTestActivity" />
         <activity android:name=".Content3Activity" />
         <activity android:name=".Content2Activity" />
         <activity android:name=".Content1Activity" />

@@ -38,6 +38,7 @@ public class PreTestActivity extends AppCompatActivity {
     Boolean pretest;
     String email;
     Intent intent;
+
     //Map<String, Object> updates2 = new HashMap<String,Object>();
 
 
@@ -55,7 +56,7 @@ public class PreTestActivity extends AppCompatActivity {
         button3 = findViewById(R.id.button3);
         button4 = findViewById(R.id.button4);
         questionsPreTest = (TextView)findViewById(R.id.questionsPreTest);
-
+        //answers[0] = "hello";
         // Database reference pointing to root of database
         rootRef = FirebaseDatabase.getInstance().getReference();
         // Database reference pointing to demo node
@@ -74,7 +75,9 @@ public class PreTestActivity extends AppCompatActivity {
 //                emailRef.push().setValue(updates);
                 rootRef.child("data").child(userId).setValue(updates);*/
 //                ResearchData data = new ResearchData(correct);
+
                 rootRef.child(mAccountUserId).child("marks").setValue(correct);
+
                 gotoContent1Activity();
             }
         }));
@@ -83,9 +86,15 @@ public class PreTestActivity extends AppCompatActivity {
     }
 
     private void updateQuestion() {
-        if (total > 4) {
-            Toast.makeText(getApplicationContext(),"Test Over! Please Submit now",Toast.LENGTH_LONG).show();
+        if (total > 30) {
+
+            rootRef.child(mAccountUserId).child("marks").setValue(correct);
+            Toast.makeText(getApplicationContext(),"Test Over! Submitted the test!",Toast.LENGTH_LONG).show();
+
+            /*rootRef.child(mAccountUserId).child("answers").setValue(answers);*/
+            gotoContent1Activity();
         } else {
+
             reference = rootRef.child("Pretest").child(String.valueOf(total));
             reference.addValueEventListener(new ValueEventListener() {
                 @Override
@@ -101,6 +110,7 @@ public class PreTestActivity extends AppCompatActivity {
                     button1.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+
                             if (button1.getText().toString().equals(pretestQuestion.getAnswer())) {
                                 correct++;
                                 total++;
@@ -116,6 +126,7 @@ public class PreTestActivity extends AppCompatActivity {
                     button2.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+
                             if (button2.getText().toString().equals(pretestQuestion.getAnswer())) {
                                 correct++;
                                 total++;
@@ -131,6 +142,7 @@ public class PreTestActivity extends AppCompatActivity {
                     button3.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+
                             if (button3.getText().toString().equals(pretestQuestion.getAnswer())) {
                                 correct++;
                                 total++;
@@ -146,6 +158,7 @@ public class PreTestActivity extends AppCompatActivity {
                     button4.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+
                             if (button4.getText().toString().equals(pretestQuestion.getAnswer())) {
                                 correct++;
                                 total++;

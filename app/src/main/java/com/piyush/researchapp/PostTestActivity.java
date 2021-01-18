@@ -63,16 +63,12 @@ public class PostTestActivity extends AppCompatActivity {
     }
 
     private void updateQuestion() {
-        if (total > 4) {
-            Toast.makeText(getApplicationContext(),"Test Over! Please Submit now",Toast.LENGTH_LONG).show();
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(getApplicationContext(),"Test Over! Please Submit now",Toast.LENGTH_LONG).show();
-                }
-            }, 2000);
-            Toast.makeText(getApplicationContext(),"Test Over! Please Submit now",Toast.LENGTH_LONG).show();
+        if (total > 30) {
+            Toast.makeText(getApplicationContext(),"Post Test Completed & Submitted",Toast.LENGTH_LONG).show();
+            rootRef.child(mAccountUserId).child("posttestmarks").setValue(correct);
+            rootRef.child(mAccountUserId).child("posttest").setValue(true);
+            gotoContent1Activity();
+
         } else {
             reference = rootRef.child("Posttest").child(String.valueOf(total));
             reference.addValueEventListener(new ValueEventListener() {
@@ -98,6 +94,7 @@ public class PostTestActivity extends AppCompatActivity {
                                 total++;
                                 updateQuestion();
                             }
+                            rootRef.child(mAccountUserId).child("posttestmarks").setValue(correct);
                         }
                     });
 
@@ -113,6 +110,7 @@ public class PostTestActivity extends AppCompatActivity {
                                 total++;
                                 updateQuestion();
                             }
+                            rootRef.child(mAccountUserId).child("posttestmarks").setValue(correct);
                         }
                     });
 
@@ -128,6 +126,7 @@ public class PostTestActivity extends AppCompatActivity {
                                 total++;
                                 updateQuestion();
                             }
+                            rootRef.child(mAccountUserId).child("posttestmarks").setValue(correct);
                         }
                     });
 
@@ -143,6 +142,7 @@ public class PostTestActivity extends AppCompatActivity {
                                 total++;
                                 updateQuestion();
                             }
+                            rootRef.child(mAccountUserId).child("posttestmarks").setValue(correct);
                         }
                     });
                 }

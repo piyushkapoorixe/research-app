@@ -33,7 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ProfileActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
-    Button logoutBtn, start_pre_test_Btn;
+    Button logoutBtn, start_pre_test_Btn,go_to_pre_test_Btn;
     TextView userName, userEmail, userId;
     ImageView profileImage;
     String email;
@@ -42,7 +42,8 @@ public class ProfileActivity extends AppCompatActivity implements GoogleApiClien
     private GoogleSignInOptions gso;
     DatabaseReference rootRef, emailRef;
     Map<String, Object> updates = new HashMap<String, Object>();
-    Boolean pretest;
+    Boolean pretest2;
+    //Boolean loggedIn;
     Intent intent;
     Boolean isEmptyData = false;
     private ResearchData userData;
@@ -59,7 +60,8 @@ public class ProfileActivity extends AppCompatActivity implements GoogleApiClien
         userId = findViewById(R.id.userId);
         profileImage = findViewById(R.id.profileImage);
         rootRef = FirebaseDatabase.getInstance().getReference();
-        pretest = intent.getBooleanExtra("pretest", false);
+        pretest2 = intent.getBooleanExtra("pretest2", false);
+        //loggedIn = intent.getBooleanExtra("loggedIn", false);
 
         // Database reference pointing to root of database
         rootRef = FirebaseDatabase.getInstance().getReference();
@@ -85,6 +87,7 @@ public class ProfileActivity extends AppCompatActivity implements GoogleApiClien
                             @Override
                             public void onResult(Status status) {
                                 if (status.isSuccess()) {
+                                    //loggedIn = true;
                                     gotoMainActivity();
                                 } else {
                                     Toast.makeText(getApplicationContext(), "Session not close", Toast.LENGTH_LONG).show();
@@ -97,25 +100,73 @@ public class ProfileActivity extends AppCompatActivity implements GoogleApiClien
         start_pre_test_Btn.setOnClickListener((new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 //gotoPreTestActivity();
                 /*ResearchData data = new ResearchData(mAccountUserId, email,false);
                 rootRef.child(mAccountUserId).setValue(data);*/
-                if (userData!=null) {
+                //if (userData!=null) {
                     if (isEmptyData) {
+                        start_pre_test_Btn.setText("Fill Info");
                         ResearchData data = new ResearchData(mAccountUserId, email, true);
                         rootRef.child(mAccountUserId).setValue(data);
-                        gotoPreTestActivity();
+                        rootRef.child(mAccountUserId).child("email").setValue(email);
+                        //Toast.makeText(getApplicationContext(), "one", Toast.LENGTH_SHORT).show();
+                        //rootRef.child(mAccountUserId).child("loggedIn").setValue(true);
+                        gotoFillInfo();
                     } else {
-                        if (userData.getPretest()) {
-                            gotoContent1Activity();
-                        } else {
-                            rootRef.child(mAccountUserId).child("pretest").setValue(true);
-                            gotoPreTestActivity();
+
+                        //rootRef.child(mAccountUserId).child("loggedIn").setValue(true);
+                        if (userData==null){
+                            Toast.makeText(getApplicationContext(), "null user data. logging out. please login again", Toast.LENGTH_SHORT).show();
+                            FirebaseAuth.getInstance().signOut();
+                            Auth.GoogleSignInApi.signOut(googleApiClient).setResultCallback(
+                                    new ResultCallback<Status>() {
+                                        @Override
+                                        public void onResult(Status status) {
+                                            if (status.isSuccess()) {
+                                                //loggedIn = true;
+                                                gotoMainActivity();
+                                            } else {
+                                                Toast.makeText(getApplicationContext(), "Session not close", Toast.LENGTH_LONG).show();
+                                            }
+                                        }
+                                    });
+                            //gotoMainActivity();
+                        }
+                        else if (userData!=null) {
+
+                            if (userData.getPretest2()) {
+                                rootRef.child(mAccountUserId).child("pretest2").setValue(true);
+                                rootRef.child(mAccountUserId).child("email").setValue(email);
+                                if (userData.getPretest()) {
+                                    rootRef.child(mAccountUserId).child("pretest").setValue(true);
+                                    start_pre_test_Btn.setText("Go To Content 1");
+                                    gotoContent1Activity();
+                                } else {
+                                    start_pre_test_Btn.setText("Go to Pre Test");
+                                    gotoPreTestActivity();
+                                }
+                            }
+                            else if (!userData.getPretest2()) {
+                                start_pre_test_Btn.setText("Fill Info");
+                                gotoFillInfo();
+                            }
+                            /*else if (userData.getPretest()) {
+                                //Toast.makeText(getApplicationContext(), "two" + userData.getPretest(), Toast.LENGTH_SHORT).show();
+                                //if (userData.getLoggedIn() == true) {
+                                gotoContent1Activity();
+                                //}
+                            } else if (!userData.getPretest()){
+                                //Toast.makeText(getApplicationContext(), "three" + userData.getPretest(), Toast.LENGTH_SHORT).show();
+                                gotoFillInfo();
+                            }*/
                         }
                     }
-                }
+                //}
             }
         }));
+
+
 
         rootRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -142,6 +193,7 @@ public class ProfileActivity extends AppCompatActivity implements GoogleApiClien
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.w("TAG", "Failed to read value.", error.toException());
             }
+
         });
     }
 
@@ -194,7 +246,15 @@ public class ProfileActivity extends AppCompatActivity implements GoogleApiClien
         Intent intent = new Intent(this, PreTestActivity.class);
         intent.putExtra("email", email);
         intent.putExtra("mAccountUserId", mAccountUserId);
-        intent.putExtra("pretest", pretest);
+        intent.putExtra("pretest2", pretest2);
+        startActivity(intent);
+    }
+
+    private void gotoFillInfo() {
+        Intent intent = new Intent(this, FillInfo.class);
+        intent.putExtra("email", email);
+        intent.putExtra("mAccountUserId", mAccountUserId);
+        intent.putExtra("pretest2", pretest2);
         startActivity(intent);
     }
 

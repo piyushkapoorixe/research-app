@@ -4,8 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class Content1Activity extends AppCompatActivity {
@@ -13,6 +15,7 @@ public class Content1Activity extends AppCompatActivity {
     String email;
     String mAccountUserId;
     Intent intent;
+    TextView textViewContent1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,6 +23,10 @@ public class Content1Activity extends AppCompatActivity {
         intent = getIntent();
 
         content1_Btn = findViewById(R.id.content1_Btn);
+        textViewContent1 = findViewById(R.id.textViewContent1);
+        textViewContent1.setMovementMethod(new ScrollingMovementMethod());
+
+
 
         mAccountUserId = intent.getStringExtra("mAccountUserId");
         email = intent.getStringExtra("email");

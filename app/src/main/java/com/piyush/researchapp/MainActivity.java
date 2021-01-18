@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private static final int RC_SIGN_IN = 1;
     String name, email;
     String idToken;
+    //Boolean loggedIn;
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
 
@@ -124,6 +125,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                             task.getException().printStackTrace();
                             Toast.makeText(MainActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
+                            goToMainActivity();
                         }
 
                     }
@@ -136,6 +138,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private void gotoProfile(){
         Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        //intent.putExtra("loggedIn", loggedIn);
+        startActivity(intent);
+        finish();
+    }
+
+    private void goToMainActivity(){
+        Intent intent = new Intent(MainActivity.this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        //intent.putExtra("loggedIn", loggedIn);
         startActivity(intent);
         finish();
     }
